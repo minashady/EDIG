@@ -1,0 +1,22 @@
+<h3 class="text-md-center m-5">Sample Stocks</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Title</th>
+      <th scope="col">Symbol</th>
+      <th scope="col">Current Price</th>
+      <th scope="col">Past Price</th>
+      <th scope="col">Time Stamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let stock of stocks">
+      <td>{{stock.title}}</td>
+      <td>{{stock.symbol}}</td>
+      <td>{{stock.currentPrice}}</td>
+      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[0].price}}</td>
+      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[0].timeStamp}}</td>
+
+    </tr>
+  </tbody>
+</table>

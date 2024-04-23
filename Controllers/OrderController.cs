@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Stock_Exchange.Models;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace Stock_Exchange.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = "APIKey")]
     public class OrderController : ControllerBase
     {
         private static List<Orders> ordersList = new List<Orders>(); // This will act as a database for this assessment

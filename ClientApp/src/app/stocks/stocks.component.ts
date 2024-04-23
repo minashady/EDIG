@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-stocks',
@@ -16,9 +17,10 @@ export class StocksComponent implements OnInit {
   ngOnInit() {
     this.getStocks();
   }
-
   getStocks() {
-    this.http.get<StocksDetails[]>('http://localhost:7272/stocks').subscribe(data => {
+    const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment'); 
+
+    this.http.get<StocksDetails[]>('http://localhost:7272/stocks', { headers }).subscribe(data => {
       this.stocks = data;
     });
   }

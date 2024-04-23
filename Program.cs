@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "APIKey";
+    options.DefaultChallengeScheme = "APIKey";
+}).AddScheme<AuthenticationSchemeOptions, Stock_Exchange.Authorization.APIKey>("APIKey", null);
+
 var app = builder.Build();
 
 app.UseSwagger().UseSwaggerUI();
@@ -48,7 +55,8 @@ app.UseStaticFiles();
 app.UseCors("Frontend"); // to enable CORS
 
 app.UseRouting();
-
+app.UseAuthentication(); 
+app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");

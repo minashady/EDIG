@@ -13,10 +13,11 @@
     <tr *ngFor="let stock of stocks">
       <td>{{stock.title}}</td>
       <td>{{stock.symbol}}</td>
-      <td>{{stock.currentPrice}}</td>
-      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[0].price}}</td>
-      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[0].timeStamp}}</td>
-
+      <td [ngClass]="{'price-up': stock.currentPrice > stock.priceHistories[stock.priceHistories.length - 1].price, 'price-down': stock.currentPrice < stock.priceHistories[stock.priceHistories.length - 1].price}">
+        {{stock.currentPrice}}
+      </td>
+      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 1].price}}</td>
+      <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 1].timeStamp}}</td>
     </tr>
   </tbody>
 </table>

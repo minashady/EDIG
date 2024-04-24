@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
+using Stock_Exchange.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//public IConfiguration Configuration { get; }
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name:"Frontend",
@@ -47,8 +51,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Comment out the following line to disable HTTPS redirection
-// app.UseHttpsRedirection();
+
 
 app.UseStaticFiles();
 
@@ -61,6 +64,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
+app.MapHub<StockUpdates>("/priceUpdateHub");
 app.MapFallbackToFile("index.html"); ;
 
 app.Run();

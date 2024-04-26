@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { WebSocketService } from '../../../Services/webSocket.service';
 import { catchError, throwError } from 'rxjs';
+import { ReactiveFormsModule,FormBuilder, FormGroup } from '@angular/forms';
+
+
 
 @Component({
   selector: 'app-stocks',
@@ -11,9 +14,15 @@ import { catchError, throwError } from 'rxjs';
 })
 export class StocksComponent implements OnInit {
   stocks: StocksDetails[];
+  form: FormGroup;
 
-  constructor(private http: HttpClient, private webSocketService: WebSocketService) { // Inject WebSocketService
+  constructor(private fb: FormBuilder, private http: HttpClient, private webSocketService: WebSocketService) { // Inject WebSocketService
     this.stocks = [];
+    this.form = this.fb.group({
+      stockSymbol: [''],
+      orderType: [''],
+      quantity: ['']
+    });
   }
 
   ngOnInit() {
@@ -49,6 +58,18 @@ export class StocksComponent implements OnInit {
       }
     });
   }
+  placeOrder() {
+    const order = {
+      Symbol: this.form.get('stockSymbol')?.value,
+      Type: this.form.get('orderType')?.value,
+      Quantity: this.form.get('quantity')?.value
+    };
+
+    this.http.post('http://localhost:7272/order', order).subscribe(response => {
+      console.log(response);
+    });
+  }
+
 }
 
 export interface StocksDetails {

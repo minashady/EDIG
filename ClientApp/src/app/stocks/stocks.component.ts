@@ -46,7 +46,7 @@ export class StocksComponent implements OnInit {
   }
   openHistoryModal() {
     const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment');
-    this.http.get<OrdersDetails[]>('http://localhost:7272/order', { headers }).subscribe(data => {
+    this.http.get<OrdersDetails[]>('http://localhost:7272/orders', { headers }).subscribe(data => {
       this.orders = data;
       if (this.orders.length < 1) {
         Swal.fire({
@@ -179,7 +179,7 @@ export class StocksComponent implements OnInit {
         cancelButtonText: 'No'
       }).then((result) => {
         if (result.isConfirmed) {
-          this.http.post('http://localhost:7272/order', order, { headers }).subscribe(response => {
+          this.http.post('http://localhost:7272/orders', order, { headers }).subscribe(response => {
             console.log(response);
             const order: OrdersDetails = {
               symbol: this.form.get('stockSymbol')?.value,

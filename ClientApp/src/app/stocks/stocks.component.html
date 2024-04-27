@@ -1,19 +1,24 @@
 <h3 class="text-md-center m-5">Sample Stocks</h3>
-<div style="background-color: floralwhite; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); padding: 20px;">
-  <!-- Place Order Button -->
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#orderModal">
-    Place Order
-  </button>
-
+<div style="background-color:snow; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); padding: 20px;">
+  <div style="display: flex; justify-content: space-between;">
+    <!-- Place Order Button -->
+    <button type="button" class="btn btn-primary" (click)="openModal()">
+      Place Order
+    </button>
+    <!-- Order History Button -->
+    <button type="button" class="btn btn-primary" style="background-color:transparent; border-color:blue ;color:black" (click)="openHistoryModal()">
+      Order history
+    </button>
+  </div>
   <!-- Order Modal -->
-  <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+  <div class="modal"  [ngClass]="{'show': isModalOpen}" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true" [ngStyle]="{'display': isModalOpen ? 'block' : 'none'}">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
+      <div class="modal-content" style="background-color:snow; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3);">
         <div class="modal-header">
           <h5 class="modal-title" id="orderModalLabel">Place Order</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
-          </button>
+          </button>-->
         </div>
         <div class="modal-body">
           <form [formGroup]="form">
@@ -35,32 +40,76 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
           <button type="button" class="btn btn-primary" (click)="placeOrder()">Place Order</button>
         </div>
       </div>
     </div>
   </div>
-  <table class="table table-striped">
-    <thead>
+
+  <!-- Order History Modal -->
+  <div class="modal"  [ngClass]="{'show': isModalHistoryOpen}" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true" [ngStyle]="{'display': isModalHistoryOpen ? 'block' : 'none'}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content" style="background-color:snow; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3);">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderHistoryModalLabel">Place Order</h5>
+          <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>-->
+        </div>
+        <div class="modal-body table-responsive">
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Stock Symbol</th>
+                <th scope="col">Order Type</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Time Stamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders">
+                <td>{{order.symbol}}</td>
+                <td>{{order.type}}</td>
+                <td>
+                  {{order.quantity}}
+                </td>
+                
+                <td>{{order.timeStamp | date:'medium'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeHistoryModal()">Close</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class=" table-responsive">
+  <table class="table">
+    <thead class="thead-light">
       <tr>
         <th scope="col">Title</th>
         <th scope="col">Symbol</th>
         <th scope="col">Current Price</th>
         <th scope="col">Past Price</th>
-        <th scope="col">Time Stamp</th>
+        <th scope="col">Last changed</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let stock of stocks">
         <td>{{stock.title}}</td>
         <td>{{stock.symbol}}</td>
-        <td [ngClass]="{'price-up': stock.currentPrice > stock.priceHistories[stock.priceHistories.length - 1].price, 'price-down': stock.currentPrice < stock.priceHistories[stock.priceHistories.length - 1].price}">
-          {{stock.currentPrice}}
+        <td [ngClass]="{'price-up': stock.priceHistories && stock.priceHistories.length > 1 && stock.currentPrice > stock.priceHistories[stock.priceHistories.length - 2].price, 'price-down': stock.priceHistories && stock.priceHistories.length > 1 && stock.currentPrice < stock.priceHistories[stock.priceHistories.length - 2].price}">
+          {{stock.currentPrice | number:'1.2-2'}}
         </td>
-        <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 1].price}}</td>
-        <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 1].timeStamp}}</td>
+
+        <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 2].price | number:'1.2-2'}}</td>
+        <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 2].timeStamp | date:'medium'}}</td>
       </tr>
     </tbody>
   </table>
-  </div>
+    </div>
+</div>

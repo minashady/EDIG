@@ -68,40 +68,65 @@ namespace Stock_Exchange.Controllers
             return new List<Stocks>
             {
                 new Stocks(
-    Guid.NewGuid(),
-    "Apple Inc.",
-    "AAPL",
-    166.28 + rnd.NextDouble() * 100 - 50,
-    new List<PriceHistory> { new PriceHistory(166.10, DateTime.Now.AddDays(-1)) }
-),
-new Stocks(
-    Guid.NewGuid(),
-    "Alphabet Inc.",
-    "GOOGL",
-    158.54 + rnd.NextDouble() * 100 - 50,
-    new List<PriceHistory> { new PriceHistory(158.10, DateTime.Now.AddDays(-1)) }
-),
-new Stocks(
-    Guid.NewGuid(),
-    "Microsoft Corporation",
-    "MSFT",
-    406.63 + rnd.NextDouble() * 100 - 50,
-    new List<PriceHistory> { new PriceHistory(406.10, DateTime.Now.AddDays(-1)) }
-),
-new Stocks(
-    Guid.NewGuid(),
-    "Amazon.com Inc.",
-    "AMZN",
-    178.53 + rnd.NextDouble() * 100 - 50,
-    new List<PriceHistory> { new PriceHistory(178.10, DateTime.Now.AddDays(-1)) }
-),
-new Stocks(
-    Guid.NewGuid(),
-    "Tesla Inc.",
-    "TSLA",
-    145.53 + rnd.NextDouble() * 100 - 50,
-    new List<PriceHistory> { new PriceHistory(145.10, DateTime.Now.AddDays(-1)) }
-)
+        Guid.NewGuid(),
+        "Apple Inc.",
+        "AAPL",
+        166.28 + rnd.NextDouble() * 1 - 0.50,
+        new List<PriceHistory>
+        {
+            new PriceHistory(166.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-3)),
+            new PriceHistory(166.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-2)),
+            new PriceHistory(166.10, DateTime.Now.AddDays(-1))
+        }
+    ),
+    new Stocks(
+        Guid.NewGuid(),
+        "Alphabet Inc.",
+        "GOOGL",
+        158.54 + rnd.NextDouble() * 1 - 0.50,
+        new List<PriceHistory>
+        {
+            new PriceHistory(158.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-3)),
+            new PriceHistory(158.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-2)),
+            new PriceHistory(158.10, DateTime.Now.AddDays(-1))
+        }
+    ),
+    new Stocks(
+        Guid.NewGuid(),
+        "Microsoft Corporation",
+        "MSFT",
+        406.63 + rnd.NextDouble() * 1 - 0.50,
+        new List<PriceHistory>
+        {
+            new PriceHistory(406.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-3)),
+            new PriceHistory(406.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-2)),
+            new PriceHistory(406.10, DateTime.Now.AddDays(-1))
+        }
+    ),
+    new Stocks(
+        Guid.NewGuid(),
+        "Amazon.com Inc.",
+        "AMZN",
+        178.53 + rnd.NextDouble() * 1 - 0.50,
+        new List<PriceHistory>
+        {
+            new PriceHistory(178.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-3)),
+            new PriceHistory(178.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-2)),
+            new PriceHistory(178.10, DateTime.Now.AddDays(-1))
+        }
+    ),
+    new Stocks(
+        Guid.NewGuid(),
+        "Tesla Inc.",
+        "TSLA",
+        145.53 + rnd.NextDouble() * 1 - 0.50,
+        new List<PriceHistory>
+        {
+            new PriceHistory(145.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-3)),
+            new PriceHistory(145.10 - rnd.NextDouble() * 10, DateTime.Now.AddDays(-2)),
+            new PriceHistory(145.10, DateTime.Now.AddDays(-1))
+        }
+    )
             };
         }
 
@@ -114,7 +139,7 @@ new Stocks(
             var stock = stocksList[rnd.Next(stocksList.Count)];
 
             // Update the current price and add a new price history
-            var newPrice = stock.CurrentPrice + rnd.NextDouble() * 100 - 50;
+            var newPrice = stock.CurrentPrice + rnd.NextDouble() * 1 - 0.50;
             stock.CurrentPrice = newPrice;
             stock.PriceHistories.Add(new PriceHistory(newPrice, DateTime.Now));
             System.Diagnostics.Debug.WriteLine($"UpdateStocks: Updated price for {stock.Symbol} to {newPrice}");

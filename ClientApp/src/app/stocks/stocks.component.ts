@@ -14,15 +14,39 @@ import { ReactiveFormsModule,FormBuilder, FormGroup } from '@angular/forms';
 })
 export class StocksComponent implements OnInit {
   stocks: StocksDetails[];
+  orders: OrdersDetails[];
   form: FormGroup;
+  isModalOpen = false;
+  isModalHistoryOpen = false;
+ 
 
   constructor(private fb: FormBuilder, private http: HttpClient, private webSocketService: WebSocketService) { // Inject WebSocketService
     this.stocks = [];
+    this.orders = [];
     this.form = this.fb.group({
       stockSymbol: [''],
       orderType: [''],
       quantity: ['']
     });
+  }
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+  openHistoryModal() {
+    const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment');
+    this.http.get<OrdersDetails[]>('http://localhost:7272/order', { headers }).subscribe(data => {
+      this.orders = data;
+    });
+
+    this.isModalHistoryOpen = true;
+  }
+
+  closeHistoryModal() {
+    this.isModalHistoryOpen = false;
   }
 
   ngOnInit() {
@@ -55,19 +79,27 @@ export class StocksComponent implements OnInit {
 
         // Add the new price to PriceHistories
         stock.priceHistories.push({ price: PriceUpdate.price, timeStamp: new Date().toISOString() });
+
+        stock.isPriceRecentlyUpdated = true;
+        setTimeout(() => {
+          stock.isPriceRecentlyUpdated = false;
+        }, 3000);
       }
     });
   }
   placeOrder() {
+    const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment');
     const order = {
       Symbol: this.form.get('stockSymbol')?.value,
       Type: this.form.get('orderType')?.value,
-      Quantity: this.form.get('quantity')?.value
+      Quantity: this.form.get('quantity')?.value,
+      TimeStamp: new Date().toISOString()
     };
 
-    this.http.post('http://localhost:7272/order', order).subscribe(response => {
+    this.http.post('http://localhost:7272/order', order, { headers }).subscribe(response => {
       console.log(response);
     });
+    this.closeModal();
   }
 
 }
@@ -77,7 +109,15 @@ export interface StocksDetails {
   symbol: string,
   currentPrice: number,
   priceHistories: PriceHistory[]
+  isPriceRecentlyUpdated?: boolean;
 }
+export interface OrdersDetails {
+  symbol: string,
+  type: string,
+  quantity: number,
+  timeStamp: string
+}
+
 
 export interface PriceHistory {
   price: number,

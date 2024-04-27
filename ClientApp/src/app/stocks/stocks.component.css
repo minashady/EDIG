@@ -1,0 +1,11 @@
+.price-up {
+  color: green; 
+}
+
+.price-down {
+  color: red;
+}
+
+.price-normal {
+  color: black;
+}

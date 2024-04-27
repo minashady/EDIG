@@ -1,10 +1,7 @@
 <h3 class="text-md-center m-5">Sample Stocks</h3>
 <div style="background-color:snow; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); padding: 20px;">
   <div style="display: flex; justify-content: space-between;">
-    <!-- Place Order Button -->
-    <button type="button" class="btn btn-primary" (click)="openModal()">
-      Place Order
-    </button>
+    
     <!-- Order History Button -->
     <button type="button" class="btn btn-primary" style="background-color:transparent; border-color:blue ;color:black" (click)="openHistoryModal()">
       Order history
@@ -24,11 +21,11 @@
           <form [formGroup]="form">
             <div class="form-group">
               <label for="stockSymbol">Stock Symbol</label>
-              <input type="text" class="form-control" id="stockSymbol" formControlName="stockSymbol" placeholder="Enter Stock Symbol">
+              <input type="text" class="form-control" id="stockSymbol" formControlName="stockSymbol" placeholder="Enter Stock Symbol" [disabled]="true">
             </div>
             <div class="form-group">
               <label for="orderType">Order Type</label>
-              <select class="form-control" formControlName="orderType" id="orderType">
+              <select class="form-control" formControlName="orderType" id="orderType" [disabled]="true">
                 <option>Buy</option>
                 <option>Sell</option>
               </select>
@@ -49,7 +46,7 @@
 
   <!-- Order History Modal -->
   <div class="modal"  [ngClass]="{'show': isModalHistoryOpen}" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true" [ngStyle]="{'display': isModalHistoryOpen ? 'block' : 'none'}">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
       <div class="modal-content" style="background-color:snow; border-radius: 10px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3);">
         <div class="modal-header">
           <h5 class="modal-title" id="orderHistoryModalLabel">Place Order</h5>
@@ -64,7 +61,7 @@
                 <th scope="col">Stock Symbol</th>
                 <th scope="col">Order Type</th>
                 <th scope="col">Quantity</th>
-                <th scope="col">Time Stamp</th>
+                <th scope="col">Order Time</th>
               </tr>
             </thead>
             <tbody>
@@ -95,7 +92,9 @@
         <th scope="col">Symbol</th>
         <th scope="col">Current Price</th>
         <th scope="col">Past Price</th>
-        <th scope="col">Last changed</th>
+        <th scope="col">Last Updated</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -108,6 +107,18 @@
 
         <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 2].price | number:'1.2-2'}}</td>
         <td *ngIf="stock.priceHistories && stock.priceHistories.length > 0">{{stock.priceHistories[stock.priceHistories.length - 2].timeStamp | date:'medium'}}</td>
+        <td>
+          <!-- Place Order Buttons -->
+          <button style="background-color:springgreen;color:black " type="button" class="btn btn-primary" (click)="openModal(stock.symbol,'Buy')">
+            Buy
+          </button>
+        </td>
+        <td>
+          <!-- Place Order Buttons -->
+          <button style="background-color:red" type="button" class="btn btn-primary" (click)="openModal(stock.symbol,'Sell')">
+            Sell
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>

@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { WebSocketService } from '../../../Services/webSocket.service';
 import { catchError, throwError } from 'rxjs';
-import { ReactiveFormsModule,FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import Swal from 'sweetalert2'
 
 
 
@@ -18,18 +19,25 @@ export class StocksComponent implements OnInit {
   form: FormGroup;
   isModalOpen = false;
   isModalHistoryOpen = false;
- 
+
 
   constructor(private fb: FormBuilder, private http: HttpClient, private webSocketService: WebSocketService) { // Inject WebSocketService
     this.stocks = [];
     this.orders = [];
     this.form = this.fb.group({
-      stockSymbol: [''],
-      orderType: [''],
+      stockSymbol: [{ value: '', disabled: true }],
+      orderType: [{ value: '', disabled: true }],
       quantity: ['']
     });
   }
-  openModal() {
+  openModal(stockSymbol: string, orderType: string) {
+
+    this.form.setValue({
+      stockSymbol: stockSymbol,
+      orderType: orderType,
+      quantity: ''
+    });
+
     this.isModalOpen = true;
   }
 
@@ -40,9 +48,20 @@ export class StocksComponent implements OnInit {
     const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment');
     this.http.get<OrdersDetails[]>('http://localhost:7272/order', { headers }).subscribe(data => {
       this.orders = data;
+      if (this.orders.length < 1) {
+        Swal.fire({
+          title: 'You have not placed any orders Yet',
+          text: 'Orders placed will show up here',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        })
+      }
+      else {
+        this.isModalHistoryOpen = true;
+      }
     });
 
-    this.isModalHistoryOpen = true;
+
   }
 
   closeHistoryModal() {
@@ -88,6 +107,17 @@ export class StocksComponent implements OnInit {
     });
   }
   placeOrder() {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
     const headers = new HttpHeaders().set('X-Api-Key', 'EDIG_Assessment');
     const order = {
       Symbol: this.form.get('stockSymbol')?.value,
@@ -96,12 +126,78 @@ export class StocksComponent implements OnInit {
       TimeStamp: new Date().toISOString()
     };
 
-    this.http.post('http://localhost:7272/order', order, { headers }).subscribe(response => {
-      console.log(response);
-    });
-    this.closeModal();
-  }
+    // Calculate the total quantity of this stock that the user has bought and sold
+    let totalBought = Number(this.orders.filter(pastOrder => pastOrder.symbol === order.Symbol && pastOrder.type == "Buy").reduce((sum, pastOrder) => sum + Number(pastOrder.quantity), 0));
+    let totalSold = Number(this.orders.filter(pastOrder => pastOrder.symbol === order.Symbol && pastOrder.type == "Sell").reduce((sum, pastOrder) => sum + Number(pastOrder.quantity), 0));
 
+    // Check if the user has enough stocks to sell
+    let hasEnoughStocks = totalBought - totalSold >= order.Quantity;
+
+    if (order.Symbol == "" || order.Symbol == null) {
+      Toast.fire({
+        icon: "error",
+        title: "You have to enter a valid stock Symbol"
+      });
+    }
+    else if (order.Type == "" || order.Type == null) {
+      Toast.fire({
+        icon: "error",
+        title: "You have to enter a valid order type (either Buy or Sell)"
+      });
+    }
+    else if (order.Quantity == "" || order.Quantity == null) {
+      Toast.fire({
+        icon: "error",
+        title: "You have to enter a stock quantity for your order"
+      });
+    }
+    else if (!this.stocks.some(stock => stock.symbol === order.Symbol)) {
+      Toast.fire({
+        icon: "error",
+        title: "Your chosen Stock is not among the available stocks , please choose one of the available stocks"
+      });
+    }
+    else if (!this.orders.some(pastOrder => pastOrder.symbol === order.Symbol && pastOrder.type == "Buy") && order.Type == "Sell") {
+      Toast.fire({
+        icon: "error",
+        title: "You cannot sell a stock you don't own"
+      });
+    }
+    else if (order.Type == "Sell" && !hasEnoughStocks) {
+      Toast.fire({
+        icon: "error",
+        title: `You don't have enough stocks to sell. You only have ${totalBought - totalSold} stocks.`
+      });
+    }
+    else {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Your order details are in order, are you sure you want to continue? You are about to ${order.Type} ${order.Quantity} of Stock ${order.Symbol}`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.http.post('http://localhost:7272/order', order, { headers }).subscribe(response => {
+            console.log(response);
+            const order: OrdersDetails = {
+              symbol: this.form.get('stockSymbol')?.value,
+              type: this.form.get('orderType')?.value,
+              quantity: this.form.get('quantity')?.value,
+              timeStamp: new Date().toISOString()
+            };
+            this.orders.push(order);
+          });
+          this.closeModal();
+          Toast.fire({
+            icon: "success",
+            title: "Your order has been placed successfully, you can check your order history for more details"
+          });
+        }
+      })
+    }
+  }
 }
 
 export interface StocksDetails {

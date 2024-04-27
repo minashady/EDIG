@@ -149,7 +149,14 @@ add these to your headers in postman to authorize the API
 - Any browser can be used to test the functionality of the frontend webpages and web compenents
 
 ## Some Screenshots 
+Stocks Table
+![image](https://github.com/minashady/assets/blob/main/StocksTable.png)
 
+Placing Order
+![image](https://github.com/minashady/assets/blob/main/PlacingOrder.png)
+
+Viewing Orders
+![image](https://github.com/minashady/assets/blob/main/ViewingOrders.png)
 
 ## Credits
 

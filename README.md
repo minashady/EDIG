@@ -114,8 +114,10 @@ Since we do not use a database for this assessment we use static list which rese
 We do however populate some sample stocks and price histories from the get go.
 
 **API KEY**
-key:X-Api-Key 
+key:X-Api-Key
+
 value:EDIG_Assessment
+
 add these to your headers in postman to authorize the API
 ![image](https://github.com/minashady/assets/blob/main/APIKey.png)
 ### /apartments
